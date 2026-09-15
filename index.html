@@ -53,6 +53,9 @@
      o súbela a un hosting gratuito (ej. Netlify Drop) y comparte el
      link. Si envías el .zip, ella debe descomprimirlo y abrir
      index.html — así las fotos y la música sí se van a ver/escuchar.
+
+  NOTA: en esta versión las polaroids ya NO se pueden arrastrar.
+  Solo responden al toque/click para voltearse (pensada para celular).
   ================================================================
 -->
 
@@ -252,16 +255,9 @@
     padding: 14px 14px 42px;
     border-radius: 4px;
     box-shadow: 0 14px 24px rgba(52,43,53,0.2);
-    cursor: grab;
+    cursor: pointer;
     user-select:none;
-    touch-action: none;
-    transition: box-shadow 0.2s ease;
     perspective: 1000px;
-  }
-  .polaroid:active{ cursor: grabbing; }
-  .polaroid.arrastrando{
-    box-shadow: 0 22px 36px rgba(52,43,53,0.3);
-    z-index: 30;
   }
 
   .polaroid .pin{
@@ -366,7 +362,7 @@
     margin:18px 20px 0;
   }
 
-  /* Posiciones y rotaciones iniciales (escritorio) */
+  /* Posiciones y rotaciones fijas (escritorio) */
   .polaroid:nth-child(1){ top: 30px;  left: 6%;   transform: rotate(-7deg); }
   .polaroid:nth-child(2){ top: 90px;  left: 34%;  transform: rotate(5deg); }
   .polaroid:nth-child(3){ top: 40px;  left: 63%;  transform: rotate(-4deg); }
@@ -466,7 +462,7 @@
     </header>
 
     <p class="instrucciones">
-      arrastra las polaroids para moverlas · tócalas para voltearlas
+      toca cada polaroid para voltearla
     </p>
 
     <!-- ================= CORCHO CON POLAROIDS ================= -->
@@ -619,53 +615,10 @@
   actualizarContador();
   setInterval(actualizarContador, 1000);
 
-  // ---------- Arrastrar polaroids ----------
+  // ---------- Voltear polaroids al tocarlas (sin arrastre) ----------
   document.querySelectorAll('.polaroid').forEach((polaroid) => {
-    let arrastrando = false;
-    let offsetX = 0, offsetY = 0;
-    let seMovio = false;
-
-    const iniciar = (x, y) => {
-      arrastrando = true;
-      seMovio = false;
-      const rect = polaroid.getBoundingClientRect();
-      const padre = polaroid.parentElement.getBoundingClientRect();
-      offsetX = x - rect.left;
-      offsetY = y - rect.top;
-      polaroid.style.left = (rect.left - padre.left) + 'px';
-      polaroid.style.top = (rect.top - padre.top) + 'px';
-      polaroid.classList.add('arrastrando');
-    };
-
-    const mover = (x, y) => {
-      if(!arrastrando) return;
-      seMovio = true;
-      const padre = polaroid.parentElement.getBoundingClientRect();
-      let nuevoX = x - padre.left - offsetX;
-      let nuevoY = y - padre.top - offsetY;
-      polaroid.style.left = nuevoX + 'px';
-      polaroid.style.top = nuevoY + 'px';
-    };
-
-    const soltar = () => {
-      if(!arrastrando) return;
-      arrastrando = false;
-      polaroid.classList.remove('arrastrando');
-    };
-
-    polaroid.addEventListener('pointerdown', (e) => {
-      polaroid.setPointerCapture(e.pointerId);
-      iniciar(e.clientX, e.clientY);
-    });
-    polaroid.addEventListener('pointermove', (e) => mover(e.clientX, e.clientY));
-    polaroid.addEventListener('pointerup', () => soltar());
-    polaroid.addEventListener('pointercancel', () => soltar());
-
-    // Voltear al hacer click/tap, solo si no se arrastró
     polaroid.addEventListener('click', () => {
-      if(!seMovio){
-        polaroid.classList.toggle('volteada');
-      }
+      polaroid.classList.toggle('volteada');
     });
   });
 </script>
