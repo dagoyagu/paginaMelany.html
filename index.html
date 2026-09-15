@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4 meses juntos 💜</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!--
+  ================================================================
+  CÓMO PERSONALIZAR ESTA PÁGINA (léelo antes de enviarla)
+  ================================================================
+
+  1) FOTOS:
+     Busca cada bloque que dice "FOTO AQUI" dentro del código
+     (hay 8, uno por cada polaroid) y cambia el div placeholder
+     que está justo debajo por una etiqueta de imagen, por ejemplo:
+        pon una imagen con src = foto1.jpg
+     Pon tus fotos en la misma carpeta que este archivo index.html
+     (nómbralas foto1.jpg, foto2.jpg, etc. o el nombre que quieras,
+     solo que coincida con el nombre que uses).
+
+  2) NOTAS DE ATRÁS DE CADA POLAROID:
+     Busca los textos que dicen "Escribe aquí tu nota..." dentro de
+     cada <div class="nota">, bórralos y escribe tu mensaje.
+
+  3) MÚSICA (opción A: archivo MP3 — recomendada):
+     - Consigue el MP3 de la canción que quieras.
+     - Ponlo en la misma carpeta que este index.html.
+     - Renómbralo a "musica.mp3" (o cambia el nombre en la línea
+       <audio> más abajo, busca: src="musica.mp3").
+
+     MÚSICA (opción B: link de YouTube):
+     - Es menos confiable porque YouTube no siempre deja que el
+       audio se reproduzca automáticamente y necesita internet.
+     - Si aun así la prefieres, reemplaza el bloque <audio> de abajo
+       por un iframe embebido de YouTube con autoplay=1, por ejemplo:
+       <iframe width="0" height="0" style="display:none"
+         src="https://www.youtube.com/embed/TU_ID_DE_VIDEO?autoplay=1"
+         allow="autoplay"></iframe>
+       (TU_ID_DE_VIDEO es la parte del link después de "v=").
+
+  4) FECHA DE INICIO:
+     Ya está puesta en 15 de mayo de 2026 (4 meses antes del 15 de
+     septiembre). Si quieres cambiarla, busca la línea:
+        const inicio = new Date("2026-05-15T00:00:00");
+
+  5) CÓMO ENVIARLA:
+     Cuando termines de poner fotos, notas y música, comprime la
+     carpeta completa (index.html + fotos + musica.mp3) en un .zip,
+     o súbela a un hosting gratuito (ej. Netlify Drop) y comparte el
+     link. Si envías el .zip, ella debe descomprimirlo y abrir
+     index.html — así las fotos y la música sí se van a ver/escuchar.
+  ================================================================
+-->
+
+<style>
+  :root{
+    --lila-fondo: #f7f1e9;
+    --lila-corcho: #dce5d7;
+    --lila: #d66f63;
+    --lila-oscuro: #553449;
+    --ciruela: #342b35;
+    --crema: #fffdf8;
+    --cafe: #9a684f;
+    --rosa: #e7a18e;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin:0;
+    padding:0;
+    width:100%;
+    min-height:100%;
+    background: var(--lila-fondo);
+    color: var(--ciruela);
+    font-family:'Quicksand', sans-serif;
+    overflow-x:hidden;
+  }
+
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    opacity:0.35;
+    background-image: radial-gradient(rgba(85,52,73,0.12) 0.7px, transparent 0.7px);
+    background-size:13px 13px;
+    mask-image:linear-gradient(to bottom, black, transparent 78%);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+
+  /* ---------- PORTAL DE ENTRADA ---------- */
+  #portal{
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background:
+      radial-gradient(circle at 50% 28%, rgba(231,161,142,0.34), transparent 27%),
+      linear-gradient(145deg, #f8eee6 0%, #f7f1e9 52%, #e5eee4 100%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding: 24px;
+    transition: opacity 0.9s ease, visibility 0.9s ease;
+  }
+  #portal.oculto{
+    opacity: 0;
+    visibility: hidden;
+    pointer-events:none;
+  }
+  #portal h1{
+    font-family:'Caveat', cursive;
+    font-size: clamp(2.4rem, 8vw, 4.2rem);
+    color: var(--lila-oscuro);
+    margin: 0 0 6px;
+    line-height:1.05;
+  }
+  #portal p{
+    font-size: 1rem;
+    color: var(--ciruela);
+    opacity:0.8;
+    margin: 0 0 28px;
+    max-width: 320px;
+  }
+  #boton-abrir{
+    border: none;
+    background: var(--lila-oscuro);
+    color: var(--crema);
+    font-family:'Quicksand', sans-serif;
+    font-weight:600;
+    font-size: 1rem;
+    padding: 14px 30px;
+    border-radius: 999px;
+    cursor:pointer;
+    box-shadow: 0 10px 24px rgba(85,52,73,0.25);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  #boton-abrir:hover{
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 14px 28px rgba(85,52,73,0.34);
+  }
+  #boton-abrir:active{ transform: translateY(0) scale(0.98); }
+  #boton-abrir svg{ width:20px; height:20px; }
+
+  .huellas-portal{
+    position:absolute;
+    opacity:0.35;
+  }
+
+  /* ---------- CONTENIDO PRINCIPAL ---------- */
+  #contenido{
+    opacity:0;
+    transition: opacity 1s ease 0.2s;
+  }
+  #contenido.visible{ opacity:1; }
+
+  header.cabecera{
+    text-align:center;
+    padding: 70px 20px 24px;
+    position:relative;
+  }
+  header.cabecera h1{
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    font-size: clamp(2.8rem, 9vw, 5rem);
+    color: var(--lila-oscuro);
+    margin: 0;
+    line-height:1;
+  }
+  header.cabecera .subtitulo{
+    margin-top: 10px;
+    font-size: 0.95rem;
+    color: var(--ciruela);
+    opacity:0.72;
+    letter-spacing:0.02em;
+  }
+
+  #contador{
+    margin: 22px auto 0;
+    display:inline-flex;
+    gap: 0;
+    flex-wrap:wrap;
+    justify-content:center;
+    background: rgba(255,253,248,0.86);
+    padding: 13px 8px;
+    border: 1px solid rgba(85,52,73,0.1);
+    border-radius: 16px;
+    box-shadow: 0 12px 28px rgba(85,52,73,0.1);
+    backdrop-filter:blur(8px);
+  }
+  .unidad{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    min-width: 64px;
+    padding: 0 11px;
+    border-right: 1px solid rgba(85,52,73,0.12);
+  }
+  .unidad:last-child{ border-right:0; }
+  .unidad .numero{
+    font-family:'Caveat', cursive;
+    font-size: 1.9rem;
+    font-weight:700;
+    color: var(--lila-oscuro);
+    line-height:1;
+  }
+  .unidad .etiqueta{
+    font-size: 0.65rem;
+    color: var(--ciruela);
+    opacity:0.7;
+    margin-top: 2px;
+  }
+
+  /* doodles */
+  .doodle{
+    position:absolute;
+    opacity:0.5;
+  }
+
+  /* ---------- CORCHO / TABLERO DE POLAROIDS ---------- */
+  #corcho{
+    position: relative;
+    margin: 42px auto 20px;
+    max-width: 1000px;
+    min-height: 900px;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(255,255,255,0.5), transparent 32%),
+      radial-gradient(circle at 85% 70%, rgba(214,111,99,0.13), transparent 34%),
+      repeating-linear-gradient(115deg, rgba(85,52,73,0.025) 0 2px, transparent 2px 7px),
+      var(--lila-corcho);
+    border-radius: 22px;
+    box-shadow: 0 18px 38px rgba(85,52,73,0.12), inset 0 0 0 1px rgba(85,52,73,0.1);
+    padding: 40px 20px;
+  }
+
+  .polaroid{
+    position:absolute;
+    width: 190px;
+    background: var(--crema);
+    padding: 14px 14px 42px;
+    border-radius: 4px;
+    box-shadow: 0 14px 24px rgba(52,43,53,0.2);
+    cursor: grab;
+    user-select:none;
+    touch-action: none;
+    transition: box-shadow 0.2s ease;
+    perspective: 1000px;
+  }
+  .polaroid:active{ cursor: grabbing; }
+  .polaroid.arrastrando{
+    box-shadow: 0 22px 36px rgba(52,43,53,0.3);
+    z-index: 30;
+  }
+
+  .polaroid .pin{
+    position:absolute;
+    top: -9px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff, var(--rosa) 60%, var(--lila-oscuro));
+    box-shadow: 0 3px 4px rgba(0,0,0,0.25);
+  }
+
+  .polaroid .cara{
+    position:relative;
+    width:100%;
+    height: 190px;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+  }
+  .polaroid.volteada .cara{ transform: rotateY(180deg); }
+
+  .foto-frente, .nota{
+    position:absolute;
+    inset:0;
+    backface-visibility:hidden;
+    border-radius: 2px;
+  }
+
+  .foto-frente{
+    background: linear-gradient(160deg, #f8e8df, #edf1e8);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    color: var(--lila-oscuro);
+    opacity: 0.92;
+    border: 1.5px dashed var(--rosa);
+    text-align:center;
+    font-size: 0.78rem;
+    padding: 10px;
+  }
+  .foto-frente svg{ width:34px; height:34px; opacity:0.7; }
+
+  /* si reemplazas el div por <img>, esta clase lo deja bien encajado */
+  .foto-frente img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:2px;
+  }
+
+  .nota{
+    transform: rotateY(180deg);
+    background: var(--crema);
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 22px,
+      rgba(113,139,121,0.2) 23px
+    );
+    padding: 14px 12px 6px;
+    font-family:'Caveat', cursive;
+    font-size: 1.15rem;
+    color: var(--ciruela);
+    line-height: 23px;
+    overflow:hidden;
+  }
+
+  .polaroid .leyenda{
+    position:absolute;
+    bottom: 10px;
+    left:0;
+    right:0;
+    text-align:center;
+    font-family:'Caveat', cursive;
+    font-size: 1.05rem;
+    color: var(--ciruela);
+  }
+
+  .polaroid .voltear-hint{
+    position:absolute;
+    bottom: -18px;
+    left:0;
+    right:0;
+    text-align:center;
+    font-size: 0.6rem;
+    color: var(--lila-oscuro);
+    opacity:0;
+    transition: opacity 0.2s ease;
+  }
+  .polaroid:hover .voltear-hint{ opacity:0.6; }
+
+  .instrucciones{
+    text-align:center;
+    font-size:0.75rem;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    color:var(--verde);
+    margin:18px 20px 0;
+  }
+
+  /* Posiciones y rotaciones iniciales (escritorio) */
+  .polaroid:nth-child(1){ top: 30px;  left: 6%;   transform: rotate(-7deg); }
+  .polaroid:nth-child(2){ top: 90px;  left: 34%;  transform: rotate(5deg); }
+  .polaroid:nth-child(3){ top: 40px;  left: 63%;  transform: rotate(-4deg); }
+  .polaroid:nth-child(4){ top: 330px; left: 12%;  transform: rotate(6deg); }
+  .polaroid:nth-child(5){ top: 360px; left: 42%;  transform: rotate(-8deg); }
+  .polaroid:nth-child(6){ top: 320px; left: 70%;  transform: rotate(4deg); }
+  .polaroid:nth-child(7){ top: 610px; left: 22%;  transform: rotate(-5deg); }
+  .polaroid:nth-child(8){ top: 630px; left: 54%;  transform: rotate(7deg); }
+
+  @media (max-width: 640px){
+    #corcho{ min-height: 1500px; padding: 20px 14px; }
+    .polaroid{ width: 150px; }
+    .polaroid .cara{ height: 150px; }
+    .polaroid:nth-child(1){ top: 20px;  left: 8%;  }
+    .polaroid:nth-child(2){ top: 190px; left: 45%; }
+    .polaroid:nth-child(3){ top: 360px; left: 10%; }
+    .polaroid:nth-child(4){ top: 530px; left: 45%; }
+    .polaroid:nth-child(5){ top: 700px; left: 8%;  }
+    .polaroid:nth-child(6){ top: 870px; left: 45%; }
+    .polaroid:nth-child(7){ top: 1040px;left: 10%; }
+    .polaroid:nth-child(8){ top: 1210px;left: 45%; }
+  }
+
+  footer{
+    text-align:center;
+    padding: 30px 20px 60px;
+    font-family:'Caveat', cursive;
+    font-size: 1.2rem;
+    color: var(--lila-oscuro);
+    opacity: 0.8;
+  }
+</style>
+</head>
+<body>
+
+  <!-- ================= PORTAL DE ENTRADA ================= -->
+  <div id="portal">
+    <svg class="huellas-portal" style="top:15%; left:12%; width:34px;" viewBox="0 0 64 64" fill="none">
+      <ellipse cx="32" cy="44" rx="14" ry="12" fill="#9b7ede"/>
+      <ellipse cx="14" cy="24" rx="7" ry="8" fill="#9b7ede"/>
+      <ellipse cx="30" cy="14" rx="7" ry="8" fill="#9b7ede"/>
+      <ellipse cx="48" cy="16" rx="7" ry="8" fill="#9b7ede"/>
+      <ellipse cx="54" cy="34" rx="7" ry="8" fill="#9b7ede"/>
+    </svg>
+    <svg class="huellas-portal" style="bottom:12%; right:14%; width:26px;" viewBox="0 0 64 64" fill="none">
+      <ellipse cx="32" cy="44" rx="14" ry="12" fill="#f0a8c0"/>
+      <ellipse cx="14" cy="24" rx="7" ry="8" fill="#f0a8c0"/>
+      <ellipse cx="30" cy="14" rx="7" ry="8" fill="#f0a8c0"/>
+      <ellipse cx="48" cy="16" rx="7" ry="8" fill="#f0a8c0"/>
+      <ellipse cx="54" cy="34" rx="7" ry="8" fill="#f0a8c0"/>
+    </svg>
+
+    <h1>4 meses juntos</h1>
+    <p>toca el botón para abrir nuestro rincón</p>
+    <button id="boton-abrir" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 18V5l12-2v13"/>
+        <circle cx="6" cy="18" r="3"/>
+        <circle cx="18" cy="16" r="3"/>
+      </svg>
+      abrir
+    </button>
+  </div>
+
+  <!-- ================= CONTENIDO PRINCIPAL ================= -->
+  <div id="contenido">
+
+    <audio id="musica-fondo" loop preload="auto">
+      <source src="musica.mp3" type="audio/mpeg">
+    </audio>
+
+    <header class="cabecera">
+      <!-- doodle taza de café -->
+      <svg class="doodle" style="top:10px; left:8%; width:46px;" viewBox="0 0 64 64" fill="none" stroke="#8b5e3c" stroke-width="2.5">
+        <path d="M12 26h34v14a12 12 0 0 1-12 12H24a12 12 0 0 1-12-12V26Z"/>
+        <path d="M46 30h4a6 6 0 0 1 0 12h-4"/>
+        <path d="M20 18c0-3 3-3 3-6M28 18c0-3 3-3 3-6M36 18c0-3 3-3 3-6" stroke-linecap="round"/>
+      </svg>
+      <!-- doodle gatito -->
+      <svg class="doodle" style="top:6px; right:8%; width:50px;" viewBox="0 0 64 64" fill="none" stroke="#6d4fb0" stroke-width="2.5">
+        <path d="M18 40c-2-10 2-22 14-22s16 12 14 22c-1 8-8 12-14 12s-13-4-14-12Z"/>
+        <path d="M18 22l-4-10 10 6M46 22l4-10-10 6"/>
+        <circle cx="26" cy="34" r="1.6" fill="#6d4fb0"/>
+        <circle cx="38" cy="34" r="1.6" fill="#6d4fb0"/>
+        <path d="M28 40c2 2 6 2 8 0" stroke-linecap="round"/>
+      </svg>
+
+      <h1>Nuestros 4 meses</h1>
+      <p class="subtitulo">un rinconcito con nuestras fotos y notitas</p>
+
+      <div id="contador">
+        <div class="unidad"><span class="numero" id="c-dias">0</span><span class="etiqueta">días</span></div>
+        <div class="unidad"><span class="numero" id="c-horas">0</span><span class="etiqueta">horas</span></div>
+        <div class="unidad"><span class="numero" id="c-min">0</span><span class="etiqueta">min</span></div>
+        <div class="unidad"><span class="numero" id="c-seg">0</span><span class="etiqueta">seg</span></div>
+      </div>
+    </header>
+
+    <p class="instrucciones">
+      arrastra las polaroids para moverlas · tócalas para voltearlas
+    </p>
+
+    <!-- ================= CORCHO CON POLAROIDS ================= -->
+    <div id="corcho">
+
+      <div class="polaroid">
+        <div class="pin"></div>
+        <div class="cara">
+          <div class="foto-frente">
+            <!-- FOTO AQUÍ: reemplaza este div por <img src="foto1.jpg"> -->
+            <img src="foto1.jpg" alt="Un recuerdo especial">
+          </div>
+          <div class="nota">Aquel 1 de noviembre cuando nuestros cuerpos por fin decidieron darse pasión, sin saber que sería el comienzo de una </div>
+        </div>
+        <div class="leyenda">Nov 2023</div>
+        <div class="voltear-hint">toca para voltear</div>
+      </div>
+
+      <div class="polaroid">
+        <div class="pin"></div>
+        <div class="cara">
+          <div class="foto-frente">
+            <!-- FOTO AQUÍ: reemplaza este div por <img src="foto2.jpg"> -->
+             <img src="foto2.jpg">
+          
+          </div>
+          <div class="nota"> Gracias por estar en los momentos más difíciles de mi vida. </div>
+        </div>
+        <div class="leyenda">Feb 2024</div>
+        <div class="voltear-hint">toca para voltear</div>
+      </div>
+
+      <div class="polaroid">
+        <div class="pin"></div>
+        <div class="cara">
+          <div class="foto-frente">
+            <!-- FOTO AQUÍ: reemplaza este div por <img src="foto3.jpg"> -->
+            <img src="foto3.jpg">
+          </div>
+          <div class="nota">Gracias por mostrarme tus lugares favoritos que ahora tambien son los míos. </div>
+        </div>
+        <div class="leyenda">Abril 2024</div>
+        <div class="voltear-hint">toca para voltear</div>
+      </div>
+
+      <div class="polaroid">
+        <div class="pin"></div>
+        <div class="cara">
+          <div class="foto-frente">
+            <!-- FOTO AQUÍ: reemplaza este div por <img src="foto4.jpg"> -->
+            <img src="foto4.jpg">
+          </div>
+          <div class="nota">Gracias por permitirme entrar a tu mundo, aunque a veces no lo entienda me da gusto verte feliz en lo tuyo. (Ashhh Oreo)</div>
+        </div>
+        <div class="leyenda">Agost 2024</div>
+        <div class="voltear-hint">toca para voltear</div>
+      </div>
+
+      <div class="polaroid">
+        <div class="pin"></div>
+        <div class="cara">
+          <div class="foto-frente">
+            <!-- FOTO AQUÍ: reemplaza este div por <img src="foto5.jpg"> -->
+            <img src="foto5.jpg">
+          </div>
+          <div class="nota">En verdad me da mucho gusto verte conmigo. Amo cada parte de ti y no sabes lo feliz que me haces <3 </div>
+        </div>
+        <div class="leyenda">Agost 2025</div>
+        <div class="voltear-hint">toca para voltear</div>
+      </div>
+
+      <div class="polaroid">
+        <div class="pin"></div>
+        <div class="cara">
+          <div class="foto-frente">
+            <!-- FOTO AQUÍ: reemplaza este div por <img src="foto6.jpg"> -->
+            <img src="foto6.jpg">
+          </div>
+          <div class="nota">Amo tu sonrisa, tu cabello, tus ojos, tu olor de mujer...</div>
+        </div>
+        <div class="leyenda">May 2026</div>
+        <div class="voltear-hint">toca para voltear</div>
+      </div>
+
+      <div class="polaroid">
+        <div class="pin"></div>
+        <div class="cara">
+          <div class="foto-frente">
+            <!-- FOTO AQUÍ: reemplaza este div por <img src="foto7.jpg"> -->
+            <img src="foto7.jpg">
+          </div>
+          <div class="nota">Amo cada logro que alcanzas y sé que alcanzarás muchos más.</div>
+        </div>
+        <div class="leyenda">Jul 2026</div>
+        <div class="voltear-hint">toca para voltear</div>
+      </div>
+
+      <div class="polaroid">
+        <div class="pin"></div>
+        <div class="cara">
+          <div class="foto-frente">
+            <!-- FOTO AQUÍ: reemplaza este div por <img src="foto8.jpg"> -->
+            <img src="foto8.jpg">
+          </div>
+          <div class="nota">Y yo estaré aquí apoyándote y admirando cada paso que des porque Te Amo sin condiciones. Feliz 4 meses amor :) </div>
+        </div>
+        <div class="leyenda">Agost 2026 </div>
+        <div class="voltear-hint">toca para voltear</div>
+      </div>
+
+    </div>
+
+    <footer>hecho con mucho amor para mi linda Molany💜</footer>
+  </div>
+
+<script>
+  // ---------- Portal: abre la página y arranca la música ----------
+  const portal = document.getElementById('portal');
+  const contenido = document.getElementById('contenido');
+  const botonAbrir = document.getElementById('boton-abrir');
+  const musica = document.getElementById('musica-fondo');
+
+  botonAbrir.addEventListener('click', () => {
+    musica.volume = 0.6;
+    musica.play().catch(() => { /* si no hay archivo musica.mp3 aun, no pasa nada */ });
+    portal.classList.add('oculto');
+    contenido.classList.add('visible');
+  });
+
+  // ---------- Contador en vivo ----------
+  const inicio = new Date("2026-05-15T00:00:00");
+
+  function actualizarContador(){
+    const ahora = new Date();
+    let diff = Math.max(0, ahora - inicio);
+
+    const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+    diff -= dias * (1000 * 60 * 60 * 24);
+    const horas = Math.floor(diff / (1000 * 60 * 60));
+    diff -= horas * (1000 * 60 * 60);
+    const min = Math.floor(diff / (1000 * 60));
+    diff -= min * (1000 * 60);
+    const seg = Math.floor(diff / 1000);
+
+    document.getElementById('c-dias').textContent = dias;
+    document.getElementById('c-horas').textContent = horas;
+    document.getElementById('c-min').textContent = min;
+    document.getElementById('c-seg').textContent = seg;
+  }
+  actualizarContador();
+  setInterval(actualizarContador, 1000);
+
+  // ---------- Arrastrar polaroids ----------
+  document.querySelectorAll('.polaroid').forEach((polaroid) => {
+    let arrastrando = false;
+    let offsetX = 0, offsetY = 0;
+    let seMovio = false;
+
+    const iniciar = (x, y) => {
+      arrastrando = true;
+      seMovio = false;
+      const rect = polaroid.getBoundingClientRect();
+      const padre = polaroid.parentElement.getBoundingClientRect();
+      offsetX = x - rect.left;
+      offsetY = y - rect.top;
+      polaroid.style.left = (rect.left - padre.left) + 'px';
+      polaroid.style.top = (rect.top - padre.top) + 'px';
+      polaroid.classList.add('arrastrando');
+    };
+
+    const mover = (x, y) => {
+      if(!arrastrando) return;
+      seMovio = true;
+      const padre = polaroid.parentElement.getBoundingClientRect();
+      let nuevoX = x - padre.left - offsetX;
+      let nuevoY = y - padre.top - offsetY;
+      polaroid.style.left = nuevoX + 'px';
+      polaroid.style.top = nuevoY + 'px';
+    };
+
+    const soltar = () => {
+      if(!arrastrando) return;
+      arrastrando = false;
+      polaroid.classList.remove('arrastrando');
+    };
+
+    polaroid.addEventListener('pointerdown', (e) => {
+      polaroid.setPointerCapture(e.pointerId);
+      iniciar(e.clientX, e.clientY);
+    });
+    polaroid.addEventListener('pointermove', (e) => mover(e.clientX, e.clientY));
+    polaroid.addEventListener('pointerup', () => soltar());
+    polaroid.addEventListener('pointercancel', () => soltar());
+
+    // Voltear al hacer click/tap, solo si no se arrastró
+    polaroid.addEventListener('click', () => {
+      if(!seMovio){
+        polaroid.classList.toggle('volteada');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
